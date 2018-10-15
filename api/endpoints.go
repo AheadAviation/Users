@@ -18,8 +18,8 @@ import (
 	"context"
 
 	"github.com/go-kit/kit/endpoint"
-	"github.com/go-kit/kit/tracing/opentracing"
-	stdopentracing "github.com/opentracing/opentracing-go"
+	"github.com/go-kit/kit/tracing/zipkin"
+	stdzipkin "github.com/openzipkin/zipkin-go"
 
 	"github.com/aheadaviation/Users/users"
 )
@@ -33,23 +33,19 @@ type Endpoints struct {
 	HealthEndpoint   endpoint.Endpoint
 }
 
-func MakeEndpoints(s Service, tracer stdopentracing.Tracer) Endpoints {
+func MakeEndpoints(s Service, tracer *stdzipkin.Tracer) Endpoints {
 	return Endpoints{
-		LoginEndpoint:    opentracing.TraceServer(tracer, "GET /login")(MakeLoginEndpoint(s)),
-		RegisterEndpoint: opentracing.TraceServer(tracer, "POST /register")(MakeRegisterEndpoint(s)),
-		HealthEndpoint:   opentracing.TraceServer(tracer, "GET /health")(MakeHealthEndpoint(s)),
-		UserGetEndpoint:  opentracing.TraceServer(tracer, "GET /customers")(MakeUserGetEndpoint(s)),
-		UserPostEndpoint: opentracing.TraceServer(tracer, "POST /customers")(MakeUserPostEndpoint(s)),
-		DeleteEndpoint:   opentracing.TraceServer(tracer, "DELETE /")(MakeDeleteEndpoint(s)),
+		LoginEndpoint:    zipkin.TraceEndpoint(tracer, "GET /login")(MakeLoginEndpoint(s)),
+		RegisterEndpoint: zipkin.TraceEndpoint(tracer, "POST /register")(MakeRegisterEndpoint(s)),
+		HealthEndpoint:   zipkin.TraceEndpoint(tracer, "GET /health")(MakeHealthEndpoint(s)),
+		UserGetEndpoint:  zipkin.TraceEndpoint(tracer, "GET /customers")(MakeUserGetEndpoint(s)),
+		UserPostEndpoint: zipkin.TraceEndpoint(tracer, "POST /customers")(MakeUserPostEndpoint(s)),
+		DeleteEndpoint:   zipkin.TraceEndpoint(tracer, "DELETE /")(MakeDeleteEndpoint(s)),
 	}
 }
 
 func MakeLoginEndpoint(s Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		var span stdopentracing.Span
-		span, ctx = stdopentracing.StartSpanFromContext(ctx, "login user")
-		span.SetTag("service", "user")
-		defer span.Finish()
 		req := request.(loginRequest)
 		u, err := s.Login(req.Username, req.Password)
 		return userResponse{User: u}, err
@@ -58,10 +54,6 @@ func MakeLoginEndpoint(s Service) endpoint.Endpoint {
 
 func MakeRegisterEndpoint(s Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		var span stdopentracing.Span
-		span, ctx = stdopentracing.StartSpanFromContext(ctx, "register user")
-		span.SetTag("service", "user")
-		defer span.Finish()
 		req := request.(registerRequest)
 		id, err := s.Register(req.Username, req.Password, req.Email, req.FirstName, req.LastName)
 		return postResponse{ID: id}, err
@@ -70,16 +62,9 @@ func MakeRegisterEndpoint(s Service) endpoint.Endpoint {
 
 func MakeUserGetEndpoint(s Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		var span stdopentracing.Span
-		span, ctx = stdopentracing.StartSpanFromContext(ctx, "get users")
-		span.SetTag("service", "user")
-		defer span.Finish()
-
 		req := request.(GetRequest)
 
-		userspan := stdopentracing.StartSpan("users from db", stdopentracing.ChildOf(span.Context()))
 		usrs, err := s.GetUsers(req.ID)
-		userspan.Finish()
 		if req.ID == "" {
 			return EmbedStruct{usersResponse{Users: usrs}}, err
 		}
@@ -93,10 +78,6 @@ func MakeUserGetEndpoint(s Service) endpoint.Endpoint {
 
 func MakeUserPostEndpoint(s Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		var span stdopentracing.Span
-		span, ctx = stdopentracing.StartSpanFromContext(ctx, "post user")
-		span.SetTag("service", "user")
-		defer span.Finish()
 		req := request.(users.User)
 		id, err := s.PostUser(req)
 		return postResponse{ID: id}, err
@@ -105,10 +86,6 @@ func MakeUserPostEndpoint(s Service) endpoint.Endpoint {
 
 func MakeDeleteEndpoint(s Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		var span stdopentracing.Span
-		span, ctx = stdopentracing.StartSpanFromContext(ctx, "delete entity")
-		span.SetTag("service", "user")
-		defer span.Finish()
 		req := request.(deleteRequest)
 		err = s.Delete(req.Entity, req.ID)
 		if err == nil {
@@ -120,10 +97,6 @@ func MakeDeleteEndpoint(s Service) endpoint.Endpoint {
 
 func MakeHealthEndpoint(s Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		var span stdopentracing.Span
-		span, ctx = stdopentracing.StartSpanFromContext(ctx, "health check")
-		span.SetTag("service", "user")
-		defer span.Finish()
 		health := s.Health()
 		return healthResponse{Health: health}, nil
 	}

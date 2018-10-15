@@ -14,8 +14,8 @@ import (
 
 	"github.com/go-kit/kit/log"
 	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
-	stdopentracing "github.com/opentracing/opentracing-go"
-	zipkin "github.com/openzipkin/zipkin-go-opentracing"
+	zipkin "github.com/openzipkin/zipkin-go"
+	zipkinhttp "github.com/openzipkin/zipkin-go/reporter/http"
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
 	//commonMiddleware "github.com/weaveworks/common/middleware"
 
@@ -25,8 +25,8 @@ import (
 )
 
 var (
-	port string
-	zip  string
+	port        string
+	zipkinV2URL string
 )
 
 var (
@@ -43,7 +43,7 @@ const (
 
 func init() {
 	stdprometheus.MustRegister(HTTPLatency)
-	flag.StringVar(&zip, "zipkin", os.Getenv("ZIPKIN"), "zipkin address")
+	flag.StringVar(&zipkinV2URL, "zipkin", os.Getenv("ZIPKIN_V2_URL"), "zipkin v2 address")
 	flag.StringVar(&port, "port", "8084", "Port on which to run")
 	db.Register("mongodb", &mongodb.Mongo{})
 }
@@ -69,30 +69,27 @@ func main() {
 	host := strings.Split(localAddr.String(), ":")[0]
 	defer conn.Close()
 
-	var tracer stdopentracing.Tracer
+	var zipkinTracer *zipkin.Tracer
 	{
-		if zip == "" {
-			tracer = stdopentracing.NoopTracer{}
-		} else {
-			logger := log.With(logger, "tracer", "Zipkin")
-			logger.Log("addr", zip)
-			collector, err := zipkin.NewHTTPCollector(
-				zip,
-				zipkin.HTTPLogger(logger),
-			)
-			if err != nil {
-				logger.Log("err", err)
-				os.Exit(1)
-			}
-			tracer, err = zipkin.NewTracer(
-				zipkin.NewRecorder(collector, false, fmt.Sprintf("%v:%v", host, port), ServiceName),
-			)
-			if err != nil {
-				logger.Log("err", err)
-				os.Exit(1)
-			}
+		var (
+			err           error
+			useNoopTracer = (zipkinV2URL == "")
+			reporter      = zipkinhttp.NewReporter(zipkinV2URL)
+		)
+		defer reporter.Close()
+		zEP, _ := zipkin.NewEndpoint(ServiceName, port)
+		zipkinTracer, err := zipkin.NewTracer(
+			reporter,
+			zipkin.WithLocalEndpoint(zEP),
+			zipkin.WithNoopTracer(useNoopTracer),
+		)
+		if err != nil {
+			logger.Log("err", err)
+			os.Exit(1)
 		}
-		stdopentracing.InitGlobalTracer(tracer)
+		if !useNoopTracer {
+			logger.Log("tracer", "Zipkin", "type", "Native", "URL", zipkinV2URL)
+		}
 	}
 
 	dbconn := false
@@ -133,9 +130,9 @@ func main() {
 		)
 	}
 
-	endpoints := api.MakeEndpoints(service, tracer)
+	endpoints := api.MakeEndpoints(service, zipkinTracer)
 
-	router := api.MakeHTTPHandler(endpoints, logger, tracer)
+	router := api.MakeHTTPHandler(endpoints, logger, zipkinTracer)
 
 	// httpMiddleware := []commonMiddleware.Interface{
 	// 	commonMiddleware.Instrument{

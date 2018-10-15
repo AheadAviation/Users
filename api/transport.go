@@ -23,10 +23,10 @@ import (
 	"strings"
 
 	"github.com/go-kit/kit/log"
-	"github.com/go-kit/kit/tracing/opentracing"
+	"github.com/go-kit/kit/tracing/zipkin"
 	httptransport "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
-	stdopentracing "github.com/opentracing/opentracing-go"
+	stdzipkin "github.com/openzipkin/zipkin-go"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
@@ -34,48 +34,52 @@ var (
 	ErrInvalidRequest = errors.New("Invalid request")
 )
 
-func MakeHTTPHandler(e Endpoints, logger log.Logger, tracer stdopentracing.Tracer) *mux.Router {
+func MakeHTTPHandler(e Endpoints, logger log.Logger, tracer *stdzipkin.Tracer) *mux.Router {
+	zipkinServer := zipkin.HTTPServerTrace(tracer)
+
 	r := mux.NewRouter().StrictSlash(false)
+
 	options := []httptransport.ServerOption{
 		httptransport.ServerErrorLogger(logger),
 		httptransport.ServerErrorEncoder(encodeError),
+		zipkinServer,
 	}
 
 	r.Methods("GET").Path("/login").Handler(httptransport.NewServer(
 		e.LoginEndpoint,
 		decodeLoginRequest,
 		encodeResponse,
-		append(options, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "GET /login", logger)))...,
+		options...,
 	))
 	r.Methods("POST").Path("/register").Handler(httptransport.NewServer(
 		e.RegisterEndpoint,
 		decodeRegisterRequest,
 		encodeResponse,
-		append(options, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "POST /register", logger)))...,
+		options...,
 	))
 	r.Methods("GET").Path("/customers").Handler(httptransport.NewServer(
 		e.UserGetEndpoint,
 		decodeGetRequest,
 		encodeResponse,
-		append(options, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "GET /customers", logger)))...,
+		options...,
 	))
 	r.Methods("POST").Path("/customers").Handler(httptransport.NewServer(
 		e.UserPostEndpoint,
 		decodeUserRequest,
 		encodeResponse,
-		append(options, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "POST /customers", logger)))...,
+		options...,
 	))
 	r.Methods("DELETE").Path("/").Handler(httptransport.NewServer(
 		e.DeleteEndpoint,
 		decodeDeleteRequest,
 		encodeResponse,
-		append(options, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "DELETE /", logger)))...,
+		options...,
 	))
 	r.Methods("GET").Path("/health").Handler(httptransport.NewServer(
 		e.HealthEndpoint,
 		decodeHealthRequest,
 		encodeHealthResponse,
-		append(options, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "GET /health", logger)))...,
+		options...,
 	))
 	r.Handle("/metrics", promhttp.Handler())
 	return r
