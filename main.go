@@ -3,11 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
-	"net"
 	"net/http"
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
 
 	corelog "log"
@@ -60,15 +58,6 @@ func main() {
 		logger = log.With(logger, "caller", log.DefaultCaller)
 	}
 
-	conn, err := net.Dial("udp", "8.8.8.8:80")
-	if err != nil {
-		logger.Log("err", err)
-		os.Exit(1)
-	}
-	localAddr := conn.LocalAddr().(*net.UDPAddr)
-	host := strings.Split(localAddr.String(), ":")[0]
-	defer conn.Close()
-
 	var zipkinTracer *zipkin.Tracer
 	{
 		var (
@@ -78,7 +67,7 @@ func main() {
 		)
 		defer reporter.Close()
 		zEP, _ := zipkin.NewEndpoint(ServiceName, port)
-		zipkinTracer, err := zipkin.NewTracer(
+		zipkinTracer, err = zipkin.NewTracer(
 			reporter,
 			zipkin.WithLocalEndpoint(zEP),
 			zipkin.WithNoopTracer(useNoopTracer),
