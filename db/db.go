@@ -29,7 +29,13 @@ type Database interface {
 	GetUser(string) (users.User, error)
 	GetUsers() ([]users.User, error)
 	CreateUser(*users.User) error
-	//GetUserAttributes(*users.User) error
+	GetUserAttributes(*users.User) error
+	GetAddress(string) (users.Address, error)
+	GetAddresses() ([]users.Address, error)
+	CreateAddress(*users.Address, string) error
+	GetCard(string) (users.Card, error)
+	GetCards() ([]users.Card, error)
+	CreateCard(*users.Card, string) error
 	Delete(string, string) error
 	Ping() error
 }
@@ -75,26 +81,77 @@ func CreateUser(u *users.User) error {
 
 func GetUserByName(n string) (users.User, error) {
 	u, err := DefaultDb.GetUserByName(n)
+	if err == nil {
+		u.AddLinks()
+	}
 	return u, err
 }
 
 func GetUser(n string) (users.User, error) {
 	u, err := DefaultDb.GetUser(n)
+	if err == nil {
+		u.AddLinks()
+	}
 	return u, err
 }
 
 func GetUsers() ([]users.User, error) {
 	us, err := DefaultDb.GetUsers()
+	for k, _ := range us {
+		us[k].AddLinks()
+	}
 	return us, err
 }
 
-// func GetUserAttributes(u *users.User) error {
-// 	err := DefaultDb.GetUserAttributes(u)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	return nil
-// }
+func GetUserAttributes(u *users.User) error {
+	err := DefaultDb.GetUserAttributes(u)
+	if err != nil {
+		return err
+	}
+	for k, _ := range u.Addresses {
+		u.Addresses[k].AddLinks()
+	}
+	for k, _ := range u.Cards {
+		u.Cards[k].AddLinks()
+	}
+	return nil
+}
+
+func CreateAddress(a *users.Address, userid string) error {
+	return DefaultDb.CreateAddress(a, userid)
+}
+
+func GetAddress(n string) (users.Address, error) {
+	a, err := DefaultDb.GetAddress(n)
+	if err == nil {
+		a.AddLinks()
+	}
+	return a, err
+}
+
+func GetAddresses() ([]users.Address, error) {
+	as, err := DefaultDb.GetAddresses()
+	for k, _ := range as {
+		as[k].AddLinks()
+	}
+	return as, err
+}
+
+func CreateCard(c *users.Card, userid string) error {
+	return DefaultDb.CreateCard(c, userid)
+}
+
+func GetCard(n string) (users.Card, error) {
+	return DefaultDb.GetCard(n)
+}
+
+func GetCards() ([]users.Card, error) {
+	cs, err := DefaultDb.GetCards()
+	for k, _ := range cs {
+		cs[k].AddLinks()
+	}
+	return cs, err
+}
 
 func Delete(entity, id string) error {
 	return DefaultDb.Delete(entity, id)

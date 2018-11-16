@@ -241,17 +241,26 @@
 
 [[projects]]
   branch = "v2"
-  digest = "1:988de7520a09024d5d94cd99bd545afbf194893994ec759b1cda0a0bbb6adb80"
+  digest = "1:97621dcf0e6186638399ed6848aaf14b70cedaa2590e6ce3d3f8c723f30a94bb"
   name = "gopkg.in/mgo.v2"
   packages = [
     ".",
     "bson",
+    "dbtest",
     "internal/json",
     "internal/sasl",
     "internal/scram",
   ]
   pruneopts = "UT"
   revision = "9856a29383ce1c59f308dd1cf0363a79b5bef6b5"
+
+[[projects]]
+  branch = "v2"
+  digest = "1:5bb148b78468350091db2ffbb2370f35cc6dcd74d9378a31b1c7b86ff7528f08"
+  name = "gopkg.in/tomb.v2"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "d5d1b5820637886def9eef33e03a27a9f166942c"
 
 [solve-meta]
   analyzer-name = "dep"
@@ -270,6 +279,7 @@
     "github.com/prometheus/client_golang/prometheus/promhttp",
     "gopkg.in/mgo.v2",
     "gopkg.in/mgo.v2/bson",
+    "gopkg.in/mgo.v2/dbtest",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

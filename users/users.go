@@ -16,26 +16,33 @@ package users
 
 import (
 	"crypto/sha1"
+	"errors"
 	"fmt"
 	"io"
 	"strconv"
 	"time"
 )
 
-var ErrMissingField = "Error missing %v"
+var (
+	ErrNoCustomerInResponse = errors.New("Response has no matching customer")
+	ErrMissingField         = "Error missing %v"
+)
 
 type User struct {
-	FirstName string `json:"firstname" bson:"firstname"`
-	LastName  string `json:"lastname" bson:"lastname"`
-	Email     string `json:"-" bson:"email"`
-	Username  string `json:"username" bson:"username"`
-	Password  string `json:"-" bson:"password,omitempty"`
-	UserID    string `json:"id" bson:"-"`
-	Salt      string `json:"-" bson:"salt"`
+	FirstName string    `json:"firstname" bson:"firstname"`
+	LastName  string    `json:"lastname" bson:"lastname"`
+	Email     string    `json:"-" bson:"email"`
+	Username  string    `json:"username" bson:"username"`
+	Password  string    `json:"-" bson:"password,omitempty"`
+	Addresses []Address `json:"-,omitempty" bson:"-"`
+	Cards     []Card    `json:"-,omitempty" bson:"-"`
+	UserID    string    `json:"id" bson:"-"`
+	Links     Links     `json"_links"`
+	Salt      string    `json:"-" bson:"salt"`
 }
 
 func New() User {
-	u := User{}
+	u := User{Addresses: make([]Address, 0), Cards: make([]Card, 0)}
 	u.NewSalt()
 	return u
 }
@@ -54,6 +61,17 @@ func (u *User) Validate() error {
 		return fmt.Errorf(ErrMissingField, "Password")
 	}
 	return nil
+}
+
+func (u *User) MaskCCs() {
+	for k, c := range u.Cards {
+		c.MaskCC()
+		u.Cards[k] = c
+	}
+}
+
+func (u *User) AddLinks() {
+	u.Links.AddCustomer(u.UserID)
 }
 
 func (u *User) NewSalt() {

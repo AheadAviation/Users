@@ -1,0 +1,85 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: users-db
+  labels:
+    type: db
+    service: users
+    db: mongodb
+spec:
+  selector:
+    matchLabels:
+      type: db
+      service: users
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        type: db
+        service: users
+        db: mongodb
+    spec:
+      containers:
+      - name: db
+        image: aheadaviation/mongo3
+        imagePullPolicy: IfNotPresent
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: users-db
+spec:
+  ports:
+  - port: 27017
+  selector:
+    type: db
+    sevice: users
+
+---
+
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: users-api
+  labels:
+    type: api
+    service: users
+    language: go
+spec:
+  selector:
+    matchLabels:
+      type: api
+      service: users
+  template:
+    metadata:
+      labels:
+        type: api
+        service: users
+        language: go
+    spec:
+      containers:
+      - name: api
+        image: aheadaviation/users
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: USERS_DATABASE
+          value: mongodb
+        - name: MONGO_HOST
+          value: localhost
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: users-api
+spec:
+  type: NodePort
+  ports:
+  - port: 8084
+  selector:
+    type: api
+    service: users

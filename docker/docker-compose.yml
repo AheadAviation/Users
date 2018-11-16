@@ -1,0 +1,43 @@
+version: "3"
+
+services:
+  users:
+    image: aheadaviation/users
+    ports:
+      - "8084:8084"
+    networks:
+      - frontend
+      - backend
+    depends_on:
+      - db-users
+    environment:
+      - MONGO_HOST=db-users
+      - USERS_DATABASE=mongodb
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 15s
+        max_attempts: 4
+        window: 120s
+
+  db-users:
+    image: aheadaviation/mongo3
+    ports:
+      - "27017:27017"
+    networks:
+      - backend
+    volumes:
+      - db-data:/data/db-users
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+
+networks:
+  frontend:
+  backend:
+
+volumes:
+  db-data:
