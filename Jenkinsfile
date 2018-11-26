@@ -25,6 +25,8 @@ spec:
         checkout scm
         container('golang') {
           sh """
+            ln -s `pwd` /go/src/aheadaviation/Users
+            cd /go/src/aheadaviation/Users
             make dep
             make test
           """
