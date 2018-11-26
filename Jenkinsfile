@@ -25,7 +25,8 @@ spec:
         checkout scm
         container('golang') {
           sh """
-            cd /go/src/aheadaviation/users
+            pwd
+            ls
             make test
           """
         }
