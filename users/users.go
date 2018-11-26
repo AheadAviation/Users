@@ -37,7 +37,7 @@ type User struct {
 	Addresses []Address `json:"-,omitempty" bson:"-"`
 	Cards     []Card    `json:"-,omitempty" bson:"-"`
 	UserID    string    `json:"id" bson:"-"`
-	Links     Links     `json"_links"`
+	Links     Links     `json:"_links"`
 	Salt      string    `json:"-" bson:"salt"`
 }
 
