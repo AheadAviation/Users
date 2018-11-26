@@ -25,8 +25,7 @@ spec:
         checkout scm
         container('golang') {
           sh """
-            pwd
-            ls
+            make dep
             make test
           """
         }
