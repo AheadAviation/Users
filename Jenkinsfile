@@ -39,7 +39,11 @@ spec:
       }
       steps {
         withSonarQubeEnv('SonarQube') {
-          sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=bagstore-users -Dsonar.sources=. -Dsonar.go.tests.reportPaths=."
+          sh "${scannerHome}/bin/sonar-scanner \
+              -Dsonar.projectKey=bagstore-users \
+              -Dsonar.sources=. \
+              -Dsonar.go.tests.reportPaths=. \
+              -Dsonar.go.coverage.reportPaths=."
         }
 
         timeout(time: 10, unit: 'MINUTES') {
