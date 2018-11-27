@@ -20,24 +20,7 @@ spec:
     }
   }
   stages {
-    stage('Checkout Code') {
-      steps { checkout scm }
-    }
-    stage('Check Code Quality') {
-      environment {
-        scannerHome = tool 'SonarQube Scanner'
-      }
-      steps {
-        withSonarQubeEnv('SonarQube') {
-          sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=bagstore-users -Dsonar.sources=."
-        }
-
-        timeout(time: 10, unit: 'MINUTES') {
-          waitForQualityGate abortPipeline: true
-        }
-      }
-    }
-    stage('Test') {
+    stage('Unit Test') {
       steps {
         container('golang') {
           sh """
@@ -47,6 +30,20 @@ spec:
             make dep
             make test
           """
+        }
+      }
+    }
+    stage('Check Code Quality') {
+      environment {
+        scannerHome = tool 'SonarQube Scanner'
+      }
+      steps {
+        withSonarQubeEnv('SonarQube') {
+          sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=bagstore-users -Dsonar.sources=. -Dsonar.go.tests.reportPaths=."
+        }
+
+        timeout(time: 10, unit: 'MINUTES') {
+          waitForQualityGate abortPipeline: true
         }
       }
     }

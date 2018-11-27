@@ -20,7 +20,7 @@ build:
 	CGO_ENABLED=$(CGO_ENABLED) $(GO) build -ldflags $(BUILDFLAGS) -o bin/$(NAME) $(MAIN_GO)
 
 test:
-	CGO_ENABLED=$(CGO_ENABLED) $(GO) test $(PACKAGE_DIRS) -test.v
+	CGO_ENABLED=$(CGO_ENABLED) $(GO) test $(PACKAGE_DIRS) -test.v -json > report.json
 
 install:
 	GOBIN=${GOBIN}/bin $(GO) install -ldflags $(BUILDFLAGS) $(MAIN_GO)
