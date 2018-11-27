@@ -20,9 +20,25 @@ spec:
     }
   }
   stages {
+    stage('Checkout Code') {
+      steps { checkout scm }
+    }
+    stage('Check Code Quality') {
+      environment {
+        scannerHome = tool 'SonarQube Scanner'
+      }
+      steps {
+        withSonarQubeEnv('SonarQube') {
+          sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=bagstore-users -Dsonar.sources=."
+        }
+
+        timeout(time: 10, unit: 'MINUTES') {
+          waitForQualityGate abortPipeline: true
+        }
+      }
+    }
     stage('Test') {
       steps {
-        checkout scm
         container('golang') {
           sh """
             mkdir -p /go/src/aheadaviation
@@ -30,6 +46,19 @@ spec:
             cd /go/src/aheadaviation/Users
             make dep
             make test
+          """
+        }
+      }
+    }
+    stage('Build Container') {
+      steps {
+        container('golang') {
+          sh """
+            mkdir -p /go/src/aheadaviation
+            ln -s `pwd` /go/src/aheadaviation/Users
+            cd /go/src/aheadaviation/Users
+            make dep
+            make build
           """
         }
       }
