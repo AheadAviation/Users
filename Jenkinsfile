@@ -1,4 +1,7 @@
 pipeline {
+  options {
+    buildDiscarder(logRotator(numToKeepStr: '7'))
+  }
   agent {
     kubernetes {
       label 'bagstore-users'
@@ -41,7 +44,7 @@ spec:
         withSonarQubeEnv('SonarQube') {
           sh "${scannerHome}/bin/sonar-scanner"
         }
-
+        sleep(10)
         timeout(time: 10, unit: 'MINUTES') {
           waitForQualityGate abortPipeline: true
         }
