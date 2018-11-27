@@ -50,7 +50,7 @@ spec:
         }
       }
     }
-    stage('Build Container') {
+    stage('Build & Push Binary') {
       steps {
         container('golang') {
           sh """
@@ -58,8 +58,13 @@ spec:
             ln -s `pwd` /go/src/aheadaviation/Users
             cd /go/src/aheadaviation/Users
             make dep
-            make build
+            make linux
           """
+        }
+      }
+      post {
+        success {
+          archiveArtifacts artifacts: 'bin/users-amd64-linux', fingerprint: true
         }
       }
     }
