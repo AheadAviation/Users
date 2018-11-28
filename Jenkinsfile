@@ -68,5 +68,23 @@ spec:
         }
       }
     }
+    stage('Push to Artifactory') {
+      steps {
+        script {
+          def repo = Artifactory.server artifactory
+
+          def uploadSpec = """{
+            "files": [
+              {
+                "pattern": "bin/users-amd64-linux",
+                "target": "generic-local"
+              }
+            ]
+          }"""
+
+          repo.upload(uploadSpec)
+        }
+      }
+    }
   }
 }
