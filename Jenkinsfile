@@ -71,7 +71,7 @@ spec:
     stage('Push to Artifactory') {
       steps {
         script {
-          def repo = Artifactory.server artifactory
+          def repo = Artifactory.server 'artifactory'
 
           def uploadSpec = """{
             "files": [
