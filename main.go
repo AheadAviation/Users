@@ -3,17 +3,22 @@ package main
 import (
 	"flag"
 	"fmt"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
+	"strings"
 	"syscall"
 
 	corelog "log"
 
 	"github.com/go-kit/kit/log"
 	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
-	zipkin "github.com/openzipkin/zipkin-go"
-	zipkinhttp "github.com/openzipkin/zipkin-go/reporter/http"
+	"github.com/go-kit/kit/sd/consul"
+	stdconsul "github.com/hashicorp/consul/api"
+	stdopentracing "github.com/opentracing/opentracing-go"
+	zipkin "github.com/openzipkin/zipkin-go-opentracing"
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
 	//commonMiddleware "github.com/weaveworks/common/middleware"
 
@@ -25,6 +30,7 @@ import (
 var (
 	port        string
 	zipkinV2URL string
+	consulAddr  string
 )
 
 var (
@@ -43,6 +49,7 @@ func init() {
 	stdprometheus.MustRegister(HTTPLatency)
 	flag.StringVar(&zipkinV2URL, "zipkin", os.Getenv("ZIPKIN_V2_URL"), "zipkin v2 address")
 	flag.StringVar(&port, "port", "8084", "Port on which to run")
+	flag.StringVar(&consulAddr, "consul_addr", os.Getenv("CONSUL_ADDR"), "Address of consul agent")
 	db.Register("mongodb", &mongodb.Mongo{})
 }
 
@@ -58,27 +65,44 @@ func main() {
 		logger = log.With(logger, "caller", log.DefaultCaller)
 	}
 
-	var zipkinTracer *zipkin.Tracer
+	if consulAddr == "" {
+		logger.Log("error", "no consul address set")
+		os.Exit(1)
+	}
+
+	conn, err := net.Dial("udp", "8.8.8.8:80")
+	if err != nil {
+		logger.Log("err", err)
+		os.Exit(1)
+	}
+	localAddr := conn.LocalAddr().(*net.UDPAddr)
+	host := strings.Split(localAddr.String(), ":")[0]
+	defer conn.Close()
+
+	var tracer stdopentracing.Tracer
 	{
-		var (
-			err           error
-			useNoopTracer = (zipkinV2URL == "")
-			reporter      = zipkinhttp.NewReporter(zipkinV2URL)
-		)
-		defer reporter.Close()
-		zEP, _ := zipkin.NewEndpoint(ServiceName, port)
-		zipkinTracer, err = zipkin.NewTracer(
-			reporter,
-			zipkin.WithLocalEndpoint(zEP),
-			zipkin.WithNoopTracer(useNoopTracer),
-		)
-		if err != nil {
-			logger.Log("err", err)
-			os.Exit(1)
+		if zipkinV2URL == "" {
+			tracer = stdopentracing.NoopTracer{}
+		} else {
+			logger := log.With(logger, "tracer", "Zipkin")
+			logger.Log("addr", zipkinV2URL)
+			collector, err := zipkin.NewHTTPCollector(
+				zipkinV2URL,
+				zipkin.HTTPLogger(logger),
+			)
+			if err != nil {
+				logger.Log("err", err)
+				os.Exit(1)
+			}
+			tracer, err = zipkin.NewTracer(
+				zipkin.NewRecorder(collector, false, fmt.Sprintf("%v:%v", host, port), ServiceName),
+			)
+			if err != nil {
+				logger.Log("err", err)
+				os.Exit(1)
+			}
 		}
-		if !useNoopTracer {
-			logger.Log("tracer", "Zipkin", "type", "Native", "URL", zipkinV2URL)
-		}
+		stdopentracing.InitGlobalTracer(tracer)
 	}
 
 	dbconn := false
@@ -119,9 +143,9 @@ func main() {
 		)
 	}
 
-	endpoints := api.MakeEndpoints(service, zipkinTracer)
+	endpoints := api.MakeEndpoints(service, tracer)
 
-	router := api.MakeHTTPHandler(endpoints, logger, zipkinTracer)
+	router := api.MakeHTTPHandler(endpoints, logger, tracer)
 
 	// httpMiddleware := []commonMiddleware.Interface{
 	// 	commonMiddleware.Instrument{
@@ -131,6 +155,29 @@ func main() {
 	// }
 
 	//handler := commonMiddleware.Merge(httpMiddleware...).Wrap(router)
+
+	stdClient, err := stdconsul.NewClient(&stdconsul.Config{
+		Address: consulAddr,
+	})
+	if err != nil {
+		logger.Log("error", "couldn't connect to consul agent")
+		os.Exit(1)
+	}
+	sdclient := consul.NewClient(stdClient)
+
+	intPort, _ := strconv.Atoi(port)
+	reg := &stdconsul.AgentServiceRegistration{
+		ID:                "USR",
+		Name:              "users",
+		Tags:              []string{"app=bagshop"},
+		Port:              intPort,
+		Address:           localAddr.String(),
+		EnableTagOverride: false,
+	}
+
+	registrar := consul.NewRegistrar(sdclient, reg, log.With(logger, "component", "registrar"))
+	registrar.Register()
+	defer registrar.Deregister()
 
 	go func() {
 		logger.Log("transport", "http", "port", port)

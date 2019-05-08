@@ -90,6 +90,65 @@ func (mw loggingMiddleware) GetUsers(id string) (u []users.User, err error) {
 	return mw.next.GetUsers(id)
 }
 
+func (mw loggingMiddleware) PostAddress(a users.Address, id string) (string, error) {
+	defer func(begin time.Time) {
+		mw.logger.Log(
+			"method", "PostAddress",
+			"street", a.Street,
+			"number", a.Number,
+			"user", id,
+			"took", time.Since(begin),
+		)
+	}(time.Now())
+	return mw.next.PostAddress(a, id)
+}
+
+func (mw loggingMiddleware) GetAddresses(id string) (a []users.Address, err error) {
+	defer func(begin time.Time) {
+		who := id
+		if who == "" {
+			who = "all"
+		}
+		mw.logger.Log(
+			"method", "GetAddresses",
+			"id", who,
+			"result", len(a),
+			"took", time.Since(begin),
+		)
+	}(time.Now())
+	return mw.next.GetAddresses(id)
+}
+
+func (mw loggingMiddleware) PostCard(c users.Card, id string) (string, error) {
+	defer func(begin time.Time) {
+		cc := c
+		cc.MaskCC()
+		mw.logger.Log(
+			"method", "PostCard",
+			"card", cc.LongNum,
+			"user", id,
+			"took", time.Since(begin),
+		)
+	}(time.Now())
+	return mw.next.PostCard(c, id)
+}
+
+func (mw loggingMiddleware) GetCards(id string) (c []users.Card, err error) {
+	defer func(begin time.Time) {
+		who := id
+		if who == "" {
+			who = "all"
+		}
+		mw.logger.Log(
+			"method", "GetCards",
+			"id", who,
+			"result", len(c),
+			"took", time.Since(begin),
+		)
+	}(time.Now())
+	return mw.next.GetCards(id)
+}
+
 func (mw loggingMiddleware) Delete(entity, id string) (err error) {
 	defer func(begin time.Time) {
 		mw.logger.Log(
@@ -161,6 +220,42 @@ func (s *instrumentingService) GetUsers(id string) (u []users.User, err error) {
 	}(time.Now())
 
 	return s.Service.GetUsers(id)
+}
+
+func (s *instrumentingService) PostAddress(a users.Address, id string) (string, error) {
+	defer func(begin time.Time) {
+		s.requestCount.With("method", "postAddress").Add(1)
+		s.requestLatency.With("method", "postAddress").Observe(time.Since(begin).Seconds())
+	}(time.Now())
+
+	return s.Service.PostAddress(a, id)
+}
+
+func (s *instrumentingService) GetAddresses(id string) ([]users.Address, error) {
+	defer func(begin time.Time) {
+		s.requestCount.With("method", "getAddresses").Add(1)
+		s.requestLatency.With("method", "getAddresses").Observe(time.Since(begin).Seconds())
+	}(time.Now())
+
+	return s.Service.GetAddresses(id)
+}
+
+func (s *instrumentingService) PostCard(c users.Card, id string) (string, error) {
+	defer func(begin time.Time) {
+		s.requestCount.With("method", "postCard").Add(1)
+		s.requestLatency.With("method", "postCard").Observe(time.Since(begin).Seconds())
+	}(time.Now())
+
+	return s.Service.PostCard(c, id)
+}
+
+func (s *instrumentingService) GetCards(id string) ([]users.Card, error) {
+	defer func(begin time.Time) {
+		s.requestCount.With("method", "getCards").Add(1)
+		s.requestLatency.With("method", "getCards").Observe(time.Since(begin).Seconds())
+	}(time.Now())
+
+	return s.Service.GetCards(id)
 }
 
 func (s *instrumentingService) Delete(entity, id string) error {

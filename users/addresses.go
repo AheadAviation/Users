@@ -5,7 +5,8 @@ type Address struct {
 	Number   string `json:"number" bson:"number,omitempty"`
 	Country  string `json:"country" bson:"country,omitempty"`
 	City     string `json:"city" bson:"city,omitempty"`
-	PostCost string `json:"postcode" bson:"postcode,omitempty"`
+	State		 string `json:"state" bson:"state,omitempty"`
+	PostCode string `json:"postcode" bson:"postcode,omitempty"`
 	ID       string `json:"id" bson:"-"`
 	Links    Links  `json:"_links"`
 }

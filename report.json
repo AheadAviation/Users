@@ -1,0 +1,87 @@
+{"Time":"2019-04-01T10:49:45.319437-05:00","Action":"run","Package":"github.com/aheadaviation/Users/users","Test":"TestAddressesHATEOAS"}
+{"Time":"2019-04-01T10:49:45.321443-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestAddressesHATEOAS","Output":"=== RUN   TestAddressesHATEOAS\n"}
+{"Time":"2019-04-01T10:49:45.321487-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestAddressesHATEOAS","Output":"\n"}
+{"Time":"2019-04-01T10:49:45.321523-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestAddressesHATEOAS","Output":"  Given a new address \n"}
+{"Time":"2019-04-01T10:49:45.32155-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestAddressesHATEOAS","Output":"    When adding links \n"}
+{"Time":"2019-04-01T10:49:45.321568-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestAddressesHATEOAS","Output":"      Then link should equal thet test link \u001b[32m✔\u001b[0m\n"}
+{"Time":"2019-04-01T10:49:45.321594-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestAddressesHATEOAS","Output":"\n"}
+{"Time":"2019-04-01T10:49:45.321612-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestAddressesHATEOAS","Output":"\u001b[31m\u001b[0m\u001b[33m\u001b[0m\u001b[32m\n"}
+{"Time":"2019-04-01T10:49:45.322743-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestAddressesHATEOAS","Output":"1 total assertion\u001b[0m\n"}
+{"Time":"2019-04-01T10:49:45.322854-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestAddressesHATEOAS","Output":"\n"}
+{"Time":"2019-04-01T10:49:45.323127-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestAddressesHATEOAS","Output":"--- PASS: TestAddressesHATEOAS (0.00s)\n"}
+{"Time":"2019-04-01T10:49:45.323217-05:00","Action":"pass","Package":"github.com/aheadaviation/Users/users","Test":"TestAddressesHATEOAS","Elapsed":0}
+{"Time":"2019-04-01T10:49:45.323462-05:00","Action":"run","Package":"github.com/aheadaviation/Users/users","Test":"TestCardsHATEOAS"}
+{"Time":"2019-04-01T10:49:45.323498-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestCardsHATEOAS","Output":"=== RUN   TestCardsHATEOAS\n"}
+{"Time":"2019-04-01T10:49:45.323532-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestCardsHATEOAS","Output":"\n"}
+{"Time":"2019-04-01T10:49:45.323547-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestCardsHATEOAS","Output":"  Given a new card \n"}
+{"Time":"2019-04-01T10:49:45.323563-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestCardsHATEOAS","Output":"    When adding links \n"}
+{"Time":"2019-04-01T10:49:45.323577-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestCardsHATEOAS","Output":"      Then link should equal thet test link \u001b[32m✔\u001b[0m\n"}
+{"Time":"2019-04-01T10:49:45.323605-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestCardsHATEOAS","Output":"\n"}
+{"Time":"2019-04-01T10:49:45.32362-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestCardsHATEOAS","Output":"\u001b[31m\u001b[0m\u001b[33m\u001b[0m\u001b[32m\n"}
+{"Time":"2019-04-01T10:49:45.323644-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestCardsHATEOAS","Output":"2 total assertions\u001b[0m\n"}
+{"Time":"2019-04-01T10:49:45.323659-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestCardsHATEOAS","Output":"\n"}
+{"Time":"2019-04-01T10:49:45.323676-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestCardsHATEOAS","Output":"--- PASS: TestCardsHATEOAS (0.00s)\n"}
+{"Time":"2019-04-01T10:49:45.3237-05:00","Action":"pass","Package":"github.com/aheadaviation/Users/users","Test":"TestCardsHATEOAS","Elapsed":0}
+{"Time":"2019-04-01T10:49:45.323752-05:00","Action":"run","Package":"github.com/aheadaviation/Users/users","Test":"TestMaskCCs"}
+{"Time":"2019-04-01T10:49:45.323779-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestMaskCCs","Output":"=== RUN   TestMaskCCs\n"}
+{"Time":"2019-04-01T10:49:45.323794-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestMaskCCs","Output":"\n"}
+{"Time":"2019-04-01T10:49:45.323808-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestMaskCCs","Output":"  Given a new card \n"}
+{"Time":"2019-04-01T10:49:45.323821-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestMaskCCs","Output":"    When the card is masked \n"}
+{"Time":"2019-04-01T10:49:45.323835-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestMaskCCs","Output":"      Then the card number should be masked \u001b[32m✔\u001b[0m\n"}
+{"Time":"2019-04-01T10:49:45.323849-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestMaskCCs","Output":"\n"}
+{"Time":"2019-04-01T10:49:45.323864-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestMaskCCs","Output":"\u001b[31m\u001b[0m\u001b[33m\u001b[0m\u001b[32m\n"}
+{"Time":"2019-04-01T10:49:45.32388-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestMaskCCs","Output":"3 total assertions\u001b[0m\n"}
+{"Time":"2019-04-01T10:49:45.323894-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestMaskCCs","Output":"\n"}
+{"Time":"2019-04-01T10:49:45.323911-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestMaskCCs","Output":"--- PASS: TestMaskCCs (0.00s)\n"}
+{"Time":"2019-04-01T10:49:45.323938-05:00","Action":"pass","Package":"github.com/aheadaviation/Users/users","Test":"TestMaskCCs","Elapsed":0}
+{"Time":"2019-04-01T10:49:45.323952-05:00","Action":"run","Package":"github.com/aheadaviation/Users/users","Test":"TestNewUser"}
+{"Time":"2019-04-01T10:49:45.323966-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestNewUser","Output":"=== RUN   TestNewUser\n"}
+{"Time":"2019-04-01T10:49:45.32398-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestNewUser","Output":"\n"}
+{"Time":"2019-04-01T10:49:45.323996-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestNewUser","Output":"  Given a new user \n"}
+{"Time":"2019-04-01T10:49:45.324011-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestNewUser","Output":"    When created \n"}
+{"Time":"2019-04-01T10:49:45.324025-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestNewUser","Output":"      Then cards should be initialized and empty \u001b[32m✔\u001b[0m\n"}
+{"Time":"2019-04-01T10:49:45.32404-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestNewUser","Output":"      Then addresses should be initialized and empty \u001b[32m✔\u001b[0m\n"}
+{"Time":"2019-04-01T10:49:45.324062-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestNewUser","Output":"\n"}
+{"Time":"2019-04-01T10:49:45.324078-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestNewUser","Output":"\u001b[31m\u001b[0m\u001b[33m\u001b[0m\u001b[32m\n"}
+{"Time":"2019-04-01T10:49:45.324092-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestNewUser","Output":"5 total assertions\u001b[0m\n"}
+{"Time":"2019-04-01T10:49:45.324107-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestNewUser","Output":"\n"}
+{"Time":"2019-04-01T10:49:45.324135-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestNewUser","Output":"--- PASS: TestNewUser (0.00s)\n"}
+{"Time":"2019-04-01T10:49:45.324158-05:00","Action":"pass","Package":"github.com/aheadaviation/Users/users","Test":"TestNewUser","Elapsed":0}
+{"Time":"2019-04-01T10:49:45.324199-05:00","Action":"run","Package":"github.com/aheadaviation/Users/users","Test":"TestNewUserNotValid"}
+{"Time":"2019-04-01T10:49:45.324216-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestNewUserNotValid","Output":"=== RUN   TestNewUserNotValid\n"}
+{"Time":"2019-04-01T10:49:45.324231-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestNewUserNotValid","Output":"\n"}
+{"Time":"2019-04-01T10:49:45.324246-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestNewUserNotValid","Output":"  Given a new user \n"}
+{"Time":"2019-04-01T10:49:45.32426-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestNewUserNotValid","Output":"    When validated \n"}
+{"Time":"2019-04-01T10:49:45.324274-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestNewUserNotValid","Output":"      Then result should be Missing First Name error \u001b[32m✔\u001b[0m\n"}
+{"Time":"2019-04-01T10:49:45.324304-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestNewUserNotValid","Output":"      Then u2 result should be nil \u001b[32m✔\u001b[0m\n"}
+{"Time":"2019-04-01T10:49:45.32432-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestNewUserNotValid","Output":"\n"}
+{"Time":"2019-04-01T10:49:45.324339-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestNewUserNotValid","Output":"\u001b[31m\u001b[0m\u001b[33m\u001b[0m\u001b[32m\n"}
+{"Time":"2019-04-01T10:49:45.324359-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestNewUserNotValid","Output":"7 total assertions\u001b[0m\n"}
+{"Time":"2019-04-01T10:49:45.324372-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestNewUserNotValid","Output":"\n"}
+{"Time":"2019-04-01T10:49:45.324388-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestNewUserNotValid","Output":"--- PASS: TestNewUserNotValid (0.00s)\n"}
+{"Time":"2019-04-01T10:49:45.324402-05:00","Action":"pass","Package":"github.com/aheadaviation/Users/users","Test":"TestNewUserNotValid","Elapsed":0}
+{"Time":"2019-04-01T10:49:45.324415-05:00","Action":"run","Package":"github.com/aheadaviation/Users/users","Test":"TestCardsMasked"}
+{"Time":"2019-04-01T10:49:45.324427-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestCardsMasked","Output":"=== RUN   TestCardsMasked\n"}
+{"Time":"2019-04-01T10:49:45.32444-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestCardsMasked","Output":"\n"}
+{"Time":"2019-04-01T10:49:45.324454-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestCardsMasked","Output":"  Given a new user \n"}
+{"Time":"2019-04-01T10:49:45.324467-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestCardsMasked","Output":"    When masking new cards \n"}
+{"Time":"2019-04-01T10:49:45.324489-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestCardsMasked","Output":"      Then LongNum should be ***defg \u001b[32m✔\u001b[0m\n"}
+{"Time":"2019-04-01T10:49:45.324512-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestCardsMasked","Output":"      Then LongNum should be ********pqrs \u001b[32m✔\u001b[0m\n"}
+{"Time":"2019-04-01T10:49:45.32453-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestCardsMasked","Output":"\n"}
+{"Time":"2019-04-01T10:49:45.324547-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestCardsMasked","Output":"\u001b[31m\u001b[0m\u001b[33m\u001b[0m\u001b[32m\n"}
+{"Time":"2019-04-01T10:49:45.324563-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestCardsMasked","Output":"9 total assertions\u001b[0m\n"}
+{"Time":"2019-04-01T10:49:45.324599-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestCardsMasked","Output":"\n"}
+{"Time":"2019-04-01T10:49:45.324618-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Test":"TestCardsMasked","Output":"--- PASS: TestCardsMasked (0.00s)\n"}
+{"Time":"2019-04-01T10:49:45.324635-05:00","Action":"pass","Package":"github.com/aheadaviation/Users/users","Test":"TestCardsMasked","Elapsed":0}
+{"Time":"2019-04-01T10:49:45.324651-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Output":"PASS\n"}
+{"Time":"2019-04-01T10:49:45.324703-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Output":"coverage: 71.1% of statements\n"}
+{"Time":"2019-04-01T10:49:45.325551-05:00","Action":"output","Package":"github.com/aheadaviation/Users/users","Output":"ok  \tgithub.com/aheadaviation/Users/users\t0.016s\tcoverage: 71.1% of statements\n"}
+{"Time":"2019-04-01T10:49:45.326684-05:00","Action":"pass","Package":"github.com/aheadaviation/Users/users","Elapsed":0.018}
+{"Time":"2019-04-01T10:49:48.750321-05:00","Action":"output","Package":"github.com/aheadaviation/Users","Output":"?   \tgithub.com/aheadaviation/Users\t[no test files]\n"}
+{"Time":"2019-04-01T10:49:48.75037-05:00","Action":"skip","Package":"github.com/aheadaviation/Users","Elapsed":0}
+{"Time":"2019-04-01T10:49:48.750418-05:00","Action":"output","Package":"github.com/aheadaviation/Users/api","Output":"?   \tgithub.com/aheadaviation/Users/api\t[no test files]\n"}
+{"Time":"2019-04-01T10:49:48.750464-05:00","Action":"skip","Package":"github.com/aheadaviation/Users/api","Elapsed":0}
+{"Time":"2019-04-01T10:49:48.75055-05:00","Action":"output","Package":"github.com/aheadaviation/Users/db","Output":"?   \tgithub.com/aheadaviation/Users/db\t[no test files]\n"}
+{"Time":"2019-04-01T10:49:48.750605-05:00","Action":"skip","Package":"github.com/aheadaviation/Users/db","Elapsed":0}
+{"Time":"2019-04-01T10:49:48.750658-05:00","Action":"output","Package":"github.com/aheadaviation/Users/db/mongodb","Output":"?   \tgithub.com/aheadaviation/Users/db/mongodb\t[no test files]\n"}
+{"Time":"2019-04-01T10:49:48.750685-05:00","Action":"skip","Package":"github.com/aheadaviation/Users/db/mongodb","Elapsed":0}

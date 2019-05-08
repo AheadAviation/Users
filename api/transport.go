@@ -19,14 +19,14 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
-	"os/user"
 	"strings"
 
+	"github.com/aheadaviation/Users/users"
 	"github.com/go-kit/kit/log"
-	"github.com/go-kit/kit/tracing/zipkin"
+	"github.com/go-kit/kit/tracing/opentracing"
 	httptransport "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
-	stdzipkin "github.com/openzipkin/zipkin-go"
+	stdopentracing "github.com/opentracing/opentracing-go"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
@@ -34,52 +34,72 @@ var (
 	ErrInvalidRequest = errors.New("Invalid request")
 )
 
-func MakeHTTPHandler(e Endpoints, logger log.Logger, tracer *stdzipkin.Tracer) *mux.Router {
-	zipkinServer := zipkin.HTTPServerTrace(tracer)
-
+func MakeHTTPHandler(e Endpoints, logger log.Logger, tracer stdopentracing.Tracer) *mux.Router {
 	r := mux.NewRouter().StrictSlash(false)
-
 	options := []httptransport.ServerOption{
 		httptransport.ServerErrorLogger(logger),
 		httptransport.ServerErrorEncoder(encodeError),
-		zipkinServer,
 	}
 
 	r.Methods("GET").Path("/login").Handler(httptransport.NewServer(
 		e.LoginEndpoint,
 		decodeLoginRequest,
 		encodeResponse,
-		options...,
+		append(options, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "GET /login", logger)))...,
 	))
 	r.Methods("POST").Path("/register").Handler(httptransport.NewServer(
 		e.RegisterEndpoint,
 		decodeRegisterRequest,
 		encodeResponse,
-		options...,
+		append(options, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "POST /register", logger)))...,
 	))
-	r.Methods("GET").Path("/customers").Handler(httptransport.NewServer(
+	r.Methods("GET").PathPrefix("/customers").Handler(httptransport.NewServer(
 		e.UserGetEndpoint,
 		decodeGetRequest,
 		encodeResponse,
-		options...,
+		append(options, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "GET /customers", logger)))...,
+	))
+	r.Methods("GET").PathPrefix("/cards").Handler(httptransport.NewServer(
+		e.CardGetEndpoint,
+		decodeGetRequest,
+		encodeResponse,
+		append(options, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "GET /cards", logger)))...,
+	))
+	r.Methods("GET").PathPrefix("/addresses").Handler(httptransport.NewServer(
+		e.AddressGetEndpoint,
+		decodeGetRequest,
+		encodeResponse,
+		append(options, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "GET /addresses", logger)))...,
 	))
 	r.Methods("POST").Path("/customers").Handler(httptransport.NewServer(
 		e.UserPostEndpoint,
 		decodeUserRequest,
 		encodeResponse,
-		options...,
+		append(options, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "POST /customers", logger)))...,
 	))
-	r.Methods("DELETE").Path("/").Handler(httptransport.NewServer(
+	r.Methods("POST").Path("/addresses").Handler(httptransport.NewServer(
+		e.AddressPostEndpoint,
+		decodeAddressRequest,
+		encodeResponse,
+		append(options, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "POST /addresses", logger)))...,
+	))
+	r.Methods("POST").Path("/cards").Handler(httptransport.NewServer(
+		e.CardPostEndpoint,
+		decodeCardRequest,
+		encodeResponse,
+		append(options, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "POST /cards", logger)))...,
+	))
+	r.Methods("DELETE").PathPrefix("/").Handler(httptransport.NewServer(
 		e.DeleteEndpoint,
 		decodeDeleteRequest,
 		encodeResponse,
-		options...,
+		append(options, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "DELETE /", logger)))...,
 	))
 	r.Methods("GET").Path("/health").Handler(httptransport.NewServer(
 		e.HealthEndpoint,
 		decodeHealthRequest,
 		encodeHealthResponse,
-		options...,
+		append(options, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "GET /health", logger)))...,
 	))
 	r.Handle("/metrics", promhttp.Handler())
 	return r
@@ -146,12 +166,32 @@ func decodeGetRequest(_ context.Context, r *http.Request) (interface{}, error) {
 
 func decodeUserRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	defer r.Body.Close()
-	u := user.User{}
+	u := users.User{}
 	err := json.NewDecoder(r.Body).Decode(&u)
 	if err != nil {
 		return nil, err
 	}
 	return u, nil
+}
+
+func decodeAddressRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	defer r.Body.Close()
+	a := addressPostRequest{}
+	err := json.NewDecoder(r.Body).Decode(&a)
+	if err != nil {
+		return nil, err
+	}
+	return a, nil
+}
+
+func decodeCardRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	defer r.Body.Close()
+	c := cardPostRequest{}
+	err := json.NewDecoder(r.Body).Decode(&c)
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
 }
 
 func decodeHealthRequest(_ context.Context, r *http.Request) (interface{}, error) {

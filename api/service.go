@@ -34,6 +34,10 @@ type Service interface {
 	Register(username, password, email, first, last string) (string, error)
 	GetUsers(id string) ([]users.User, error)
 	PostUser(u users.User) (string, error)
+	GetAddresses(id string) ([]users.Address, error)
+	PostAddress(a users.Address, userid string) (string, error)
+	GetCards(id string) ([]users.Card, error)
+	PostCard(c users.Card, userid string) (string, error)
 	Delete(entity, id string) error
 	Health() []Health
 }
@@ -89,6 +93,44 @@ func (s *fixedService) PostUser(u users.User) (string, error) {
 	u.Password = calculatePassHash(u.Password, u.Salt)
 	err := db.CreateUser(&u)
 	return u.UserID, err
+}
+
+func (s *fixedService) GetAddresses(id string) ([]users.Address, error) {
+	if id == "" {
+		as, err := db.GetAddresses()
+		for k, a := range as {
+			a.AddLinks()
+			as[k] = a
+		}
+		return as, err
+	}
+	a, err := db.GetAddress(id)
+	a.AddLinks()
+	return []users.Address{a}, err
+}
+
+func (s *fixedService) PostAddress(a users.Address, userid string) (string, error) {
+	err := db.CreateAddress(&a, userid)
+	return a.ID, err
+}
+
+func (s *fixedService) GetCards(id string) ([]users.Card, error) {
+	if id == "" {
+		cs, err := db.GetCards()
+		for k, c := range cs {
+			c.AddLinks()
+			cs[k] = c
+		}
+		return cs, err
+	}
+	c, err := db.GetCard(id)
+	c.AddLinks()
+	return []users.Card{c}, err
+}
+
+func (s *fixedService) PostCard(c users.Card, userid string) (string, error) {
+	err := db.CreateCard(&c, userid)
+	return c.ID, err
 }
 
 func (s *fixedService) Delete(entity, id string) error {
